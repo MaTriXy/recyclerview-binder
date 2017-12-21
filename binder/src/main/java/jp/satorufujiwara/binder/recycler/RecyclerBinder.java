@@ -1,9 +1,10 @@
 package jp.satorufujiwara.binder.recycler;
 
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,10 +15,10 @@ public abstract class RecyclerBinder<V extends ViewType>
         implements Binder<V, RecyclerView.ViewHolder> {
 
     private final V mViewType;
-    private Activity mActivity;
+    private Context mContext;
 
-    protected RecyclerBinder(final Activity activity, final V viewType) {
-        mActivity = activity;
+    protected RecyclerBinder(final Context context, final V viewType) {
+        mContext = context;
         mViewType = viewType;
     }
 
@@ -28,13 +29,17 @@ public abstract class RecyclerBinder<V extends ViewType>
 
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent) {
-        return onCreateViewHolder(mActivity.getLayoutInflater()
-                .inflate(layoutResId(), parent, false));
+        return onCreateViewHolder(LayoutInflater.from(mContext).inflate(layoutResId(), parent, false));
+    }
+
+    @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        // no op
     }
 
     @Override
     public void onRemoved() {
-        mActivity = null;
+        mContext = null;
     }
 
     @Override
@@ -42,8 +47,8 @@ public abstract class RecyclerBinder<V extends ViewType>
         return mViewType;
     }
 
-    protected final Activity getActivity() {
-        return mActivity;
+    public final Context getContext() {
+        return mContext;
     }
 
 }
